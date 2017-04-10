@@ -1,0 +1,20 @@
+{
+  "listen": {
+    "bind": "localhost"
+  },
+  "local": {
+    "skew": 1000000000000,
+    "db": {
+      "propsd": false,
+      "path": "data/keys.json"
+    }
+  },
+  "log": {
+    "json": false,
+    "level": "DEBUG",
+    "requests": true
+  },
+  "service": {
+    "port": 9301
+  }
+}
