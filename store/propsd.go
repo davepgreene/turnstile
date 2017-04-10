@@ -48,7 +48,7 @@ func (s *PropsdStore) Load() {
 	m := p.Map()
 	// Iterate the properties and coerce each value to an array of strings.
 	for k, v := range m {
-		s.store.keys[k] = strings.Fields(v)
+		s.store.keys[k] = strings.Split(v, ",")
 	}
 }
 
