@@ -57,8 +57,8 @@ func Defaults() {
 // map disappear.
 func Local() map[string]interface{} {
 	conf := make(map[string]interface{})
-	conf["algorithm"] = viper.Get("local.algorithm")
-	conf["skew"] = viper.Get("local.skew")
+	conf["algorithm"] = viper.GetString("local.algorithm")
+	conf["skew"] = viper.GetInt("local.skew")
 
 	db := make(map[string]interface{})
 	db["path"] = viper.GetString("local.db.path")
@@ -66,6 +66,21 @@ func Local() map[string]interface{} {
 	db["propsd"] = viper.GetBool("local.db.propsd")
 	db["prefix"] = viper.GetString("local.db.prefix")
 	conf["db"] = db
+
+	return conf
+}
+
+// Metrics fixes an issue where config files make nested values in the same
+// map disappear.
+func Metrics() map[string]interface{} {
+	conf := make(map[string]interface{})
+	conf["enabled"] = viper.GetBool("metrics.enabled")
+
+	client := make(map[string]interface{})
+	client["host"] = viper.GetString("metrics.client.host")
+	client["port"] = viper.GetInt("metrics.client.port")
+	client["prefix"] = viper.GetString("metrics.client.prefix")
+	conf["client"] = client
 
 	return conf
 }
