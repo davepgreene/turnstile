@@ -10,6 +10,7 @@ import (
 	"crypto/hmac"
 	"strings"
 	"fmt"
+	"encoding/base64"
 )
 
 func signature(db store.Store, algorithm crypto.Hash) func(http.ResponseWriter, *http.Request, http.HandlerFunc) {
@@ -34,7 +35,7 @@ func signature(db store.Store, algorithm crypto.Hash) func(http.ResponseWriter, 
 
 		for _, key := range keys {
 			// Create and validate the signature
-			signature, err := generateSignature(algorithm, key, r)
+			signature, err := generateSignature(algorithm, key, r, identifier)
 
 			if err != nil {
 				errors.ErrorWriter(err, rw)
@@ -42,7 +43,7 @@ func signature(db store.Store, algorithm crypto.Hash) func(http.ResponseWriter, 
 			}
 
 			// return early and invoke the next middleware if the key is valid
-			if hmac.Equal(signature, []byte(requestSignature)) == true {
+			if hmac.Equal([]byte(signature), []byte(requestSignature)) == true {
 				log.WithFields(log.Fields{
 					"identifier": identifier,
 				}).Debug("Authenticated. Forwarding request")
@@ -56,8 +57,7 @@ func signature(db store.Store, algorithm crypto.Hash) func(http.ResponseWriter, 
 	}
 }
 
-func generateSignature(algorithm crypto.Hash, secret string, r *http.Request) ([]byte, errors.HTTPWrappedError) {
-	identifier := r.Header.Get("identifier")
+func generateSignature(algorithm crypto.Hash, secret string, r *http.Request, identifier string) (string, errors.HTTPWrappedError) {
 	fields := log.Fields{
 		"identifier": identifier,
 	}
@@ -67,16 +67,7 @@ func generateSignature(algorithm crypto.Hash, secret string, r *http.Request) ([
 	log.WithFields(fields).Debugf("Using method: %s", method)
 
 	// URI
-	var uri string
-	if val := r.Header.Get("url"); val != "" {
-		uri = val
-	} else if val := r.Header.Get("path"); val != "" {
-		uri = val
-	} else {
-		return nil, errors.NewRequestError("Missing URI field", map[string]interface{}{
-			"identifier": identifier,
-		})
-	}
+	uri := r.RequestURI
 	log.WithFields(fields).Debugf("Using URI: %s", uri)
 
 	// Host
@@ -85,7 +76,9 @@ func generateSignature(algorithm crypto.Hash, secret string, r *http.Request) ([
 
 	// Date
 	date, _:= utils.MsToTime(r.Header.Get("date"))
-	log.WithFields(fields).Debugf("Using date: %s", date)
+	dateMsInt := date.Unix() * 1000
+	log.WithFields(fields).Debugf("Using date: %d", dateMsInt)
+
 
 	// Identity
 	identity := r.Header.Get("identity")
@@ -99,9 +92,9 @@ func generateSignature(algorithm crypto.Hash, secret string, r *http.Request) ([
 
 	mac.Write([]byte(fmt.Sprintf("%s %s\n", method, uri)))
 	mac.Write([]byte(fmt.Sprintf("%s\n", host)))
-	mac.Write([]byte(fmt.Sprintf("%s\n", date)))
+	mac.Write([]byte(fmt.Sprintf("%s\n", dateMsInt)))
 	mac.Write([]byte(fmt.Sprintf("%s\n", identity)))
 	mac.Write([]byte(fmt.Sprintf("%s\n", digest)))
 
-	return mac.Sum(nil), nil
+	return base64.StdEncoding.EncodeToString(mac.Sum(nil)), nil
 }
