@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"crypto"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
@@ -17,10 +16,6 @@ import (
 
 var cfgFile string
 var verbose bool
-var SUPPORTED_ALGORITHMS = map[string]interface{}{
-	"SHA256": crypto.SHA256,
-	"SHA512": crypto.SHA512,
-}
 
 // TurnstileCmd represents the base command when called without any subcommands
 var TurnstileCmd = &cobra.Command{
@@ -42,13 +37,13 @@ var TurnstileCmd = &cobra.Command{
 
 		// Prevent boot if we aren't using a supported algorithm
 		confAlg := viper.GetString("local.algorithm")
-		if val, ok := SUPPORTED_ALGORITHMS[strings.ToUpper(confAlg)]; ok {
+		if val, ok := config.SUPPORTED_ALGORITHMS[strings.ToUpper(confAlg)]; ok {
 			// Set the actual crypto algorithm instead of a string representation
 			viper.Set("local.algorithm", val)
 			return boot()
 		}
 
-		supported := strings.Join(utils.MapKeys(SUPPORTED_ALGORITHMS), ", ")
+		supported := strings.Join(utils.MapKeys(config.SUPPORTED_ALGORITHMS), ", ")
 		message := fmt.Sprintf("Turnstile currently supports the following encryption algorithms: %s. You specified %s.", supported, confAlg)
 		panic(errors.NewUnsupportedAlgorithmError(message, strings.ToUpper(confAlg)))
 	},

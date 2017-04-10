@@ -3,6 +3,7 @@ package config
 import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/spf13/viper"
+	"crypto"
 )
 
 // Defaults generates a set of default configuration options
@@ -83,4 +84,14 @@ func Metrics() map[string]interface{} {
 	conf["client"] = client
 
 	return conf
+}
+
+var SUPPORTED_ALGORITHMS = map[string]interface{}{
+	"SHA256": crypto.SHA256,
+	"SHA512": crypto.SHA512,
+}
+
+var SUPPORT_ALGORITHMS_LOOKUP = map[crypto.Hash]string {
+	crypto.SHA256: "SHA256",
+	crypto.SHA512: "SHA512",
 }
