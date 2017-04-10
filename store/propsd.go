@@ -5,6 +5,7 @@ import (
 	"errors"
 	err "github.com/davepgreene/turnstile/errors"
 	"github.com/magiconair/properties"
+	"strings"
 )
 
 type PropsdStore struct {
@@ -40,11 +41,15 @@ func (s *PropsdStore) Path() string {
 func (s *PropsdStore) Load() {
 	p := properties.MustLoadURL(s.Path())
 
-	if s.prefix == "" {
-		// Load all properties as key: [value]/value.([]string)
+	if s.prefix != "" {
+		// Filter prefix then set keys
+		p = p.FilterStripPrefix(s.prefix)
 	}
-
-	// Otherwise filter prefix then set keys
+	m := p.Map()
+	// Iterate the properties and coerce each value to an array of strings.
+	for k, v := range m {
+		s.store.keys[k] = strings.Fields(v)
+	}
 }
 
 func (s *PropsdStore) Lookup(identity string, identifier string) ([]string, err.HTTPWrappedError) {
