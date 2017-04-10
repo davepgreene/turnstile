@@ -5,8 +5,8 @@ bind = "localhost"
 skew = 1000000000000
 
 [local.db]
-propsd = false
-path = "data/keys.json"
+propsd = true
+path = "http://localhost:9100/v1/conqueso"
 
 [log]
 json = false
@@ -14,4 +14,4 @@ level = "DEBUG"
 requests = true
 
 [service]
-port = 9301
+port = 7085
