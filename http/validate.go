@@ -43,7 +43,7 @@ func validate(skew int) func(http.ResponseWriter, *http.Request, http.HandlerFun
 		now := time.Now().Unix()
 		drift := now - date.Unix()
 
-		log.Debugf("Date skew %ims", drift)
+		log.Debugf("Date skew %d ms", drift)
 
 		if math.Abs(float64(now - drift)) > float64(skew) {
 			errors.ErrorWriter(errors.NewRequestError("Request date skew is too large", metadata), rw)
