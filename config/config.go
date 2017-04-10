@@ -41,6 +41,7 @@ func Defaults() {
 		"port":     9301,
 		"hostname": "127.0.0.1",
 		"limit":    "10mb",
+		"protocol": "http://",
 	})
 
 	viper.SetDefault("metrics", map[string]interface{}{

@@ -15,6 +15,7 @@ import (
 	"gopkg.in/tylerb/graceful.v1"
 	"crypto"
 	"github.com/davepgreene/turnstile/config"
+	"github.com/davepgreene/turnstile/proxy"
 )
 
 const (
@@ -67,7 +68,10 @@ func Handler() error {
 	n.Use(negroni.HandlerFunc(signature(db, algorithm.(crypto.Hash))))
 
 	// All checks passed, forward the request
-	r.PathPrefix("/").HandlerFunc(forward)
+	forwardConn := fmt.Sprintf("%s%s:%d", viper.GetString("service.protocol"), viper.GetString("service.hostname"), viper.GetInt("service.port"))
+	p := proxy.New(forwardConn)
+	r.PathPrefix("/").HandlerFunc(p.Handle)
+
 	n.UseHandler(r)
 
 	// Set up connection
