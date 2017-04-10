@@ -93,13 +93,13 @@ func server(conn string, handler http.Handler) *graceful.Server {
 }
 
 func db() store.Store {
+	local := config.Local()["db"].(map[string]interface{})
 	// Create DB
 	storeType := "file"
-	if viper.GetBool("local.db.propsd") {
+	if local["propsd"].(bool) == true {
 		storeType = "propsd"
 	}
 
-	local := config.Local()["db"].(map[string]interface{})
 	db, err := store.CreateStore(storeType, local)
 	if err != nil {
 		// If we have an invalid store, dump out before we start the server
