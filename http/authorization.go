@@ -33,7 +33,8 @@ func authorization(rw http.ResponseWriter, r *http.Request, next http.HandlerFun
 		"identifier": identifier,
 	}).Debugf("Using Authorization Scheme: %s", parts[0])
 
-	parameters := strings.Split(base64.URLEncoding.EncodeToString([]byte(parts[1])), ":")
+	authParamBuf, _ := base64.StdEncoding.DecodeString(parts[1])
+	parameters := strings.Split(string(authParamBuf), ":")
 
 	if len(parameters) != 2 {
 		errors.ErrorWriter(errors.NewAuthorizationError("Invalid authentication parameters", metadata), rw)

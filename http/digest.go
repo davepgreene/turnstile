@@ -3,11 +3,14 @@ package http
 import (
 	"net/http"
 	"github.com/davepgreene/turnstile/errors"
+	"github.com/davepgreene/turnstile/config"
 	"crypto"
 	"io/ioutil"
 	"bytes"
 	"encoding/base64"
-	"crypto/subtle"
+	"strings"
+	"fmt"
+	"crypto/hmac"
 )
 
 func digest(algorithm crypto.Hash) func(http.ResponseWriter, *http.Request, http.HandlerFunc) {
@@ -20,14 +23,15 @@ func digest(algorithm crypto.Hash) func(http.ResponseWriter, *http.Request, http
 		buf, _ := ioutil.ReadAll(r.Body)
 		body := bytes.NewBuffer(buf)
 		deferredBody := ioutil.NopCloser(bytes.NewBuffer(buf))
+		digestHeader := r.Header.Get("digest")
 
 		h := algorithm.New()
 		h.Write(body.Bytes())
-		signature := []byte(base64.URLEncoding.EncodeToString(h.Sum(nil)))
 
-		digestHeader := []byte(r.Header.Get("digest"))
+		strAlg := strings.ToUpper(config.SUPPORT_ALGORITHMS_LOOKUP[algorithm])
+		signature := fmt.Sprintf("%s=%s", strAlg, base64.StdEncoding.EncodeToString(h.Sum(nil)))
 
-		if val := subtle.ConstantTimeCompare(signature, digestHeader); val == 0 {
+		if hmac.Equal([]byte(signature), []byte(digestHeader)) == false {
 			errors.ErrorWriter(errors.NewAuthorizationError("Digest header does not match request body", metadata), rw)
 			return
 		}
