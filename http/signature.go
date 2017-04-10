@@ -92,7 +92,7 @@ func generateSignature(algorithm crypto.Hash, secret string, r *http.Request, id
 
 	mac.Write([]byte(fmt.Sprintf("%s %s\n", method, uri)))
 	mac.Write([]byte(fmt.Sprintf("%s\n", host)))
-	mac.Write([]byte(fmt.Sprintf("%s\n", dateMsInt)))
+	mac.Write([]byte(fmt.Sprintf("%d\n", dateMsInt)))
 	mac.Write([]byte(fmt.Sprintf("%s\n", identity)))
 	mac.Write([]byte(fmt.Sprintf("%s\n", digest)))
 
