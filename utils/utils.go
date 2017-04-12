@@ -3,8 +3,6 @@ package utils
 import (
 	"reflect"
 	"runtime"
-	"strconv"
-	"time"
 )
 
 // GetFunctionName uses reflection to get the name of a function as a string
