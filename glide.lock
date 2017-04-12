@@ -1,5 +1,5 @@
-hash: bfbc2c6b182ee624b6fb3e1f5ed96a283be89ab8bcda365e9f32323ef75499a7
-updated: 2017-04-08T23:49:07.742404293-04:00
+hash: 5569d69b290f8390d0a4edb06a4b673f6fb5bfa42039a1ffa8c5c0090ad2c4c8
+updated: 2017-04-12T17:15:50.707455093-04:00
 imports:
 - name: github.com/DataDog/datadog-go
   version: 909c02b65dd8a52e8fa6072db9752a112227cf21
@@ -58,6 +58,15 @@ imports:
   version: 152b5d051953fdb6e45f14b6826962aadc032324
 - name: github.com/urfave/negroni
   version: fde5e16d32adc7ad637e9cd9ad21d4ebc6192535
+- name: github.com/vulcand/oxy
+  version: 12aa65630360a8ab1827975bd46491a358094cd9
+  subpackages:
+  - forward
+  - stream
+  - testutils
+  - utils
+- name: github.com/vulcand/predicate
+  version: 19b9dde14240d94c804ae5736ad0e1de10bf8fe6
 - name: golang.org/x/sys
   version: f3918c30c5c2cb527c0b071a27c35120a6c0719a
   subpackages:

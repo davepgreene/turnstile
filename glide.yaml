@@ -22,3 +22,5 @@ import:
   - statsd
 - package: github.com/magiconair/properties
   version: ^1.7.2
+- package: github.com/vulcand/oxy
+- package: github.com/vulcand/predicate
