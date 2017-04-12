@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"github.com/davepgreene/turnstile/store"
 	"github.com/davepgreene/turnstile/errors"
-	"github.com/davepgreene/turnstile/utils"
+	"strconv"
 	log "github.com/Sirupsen/logrus"
 	"crypto"
 	"crypto/hmac"
@@ -75,8 +75,7 @@ func generateSignature(algorithm crypto.Hash, secret string, r *http.Request, id
 	log.WithFields(fields).Debugf("Using host: %s", host)
 
 	// Date
-	date, _:= utils.MsToTime(r.Header.Get("date"))
-	dateMsInt := date.Unix() * 1000
+	dateMsInt, _ := strconv.ParseInt(r.Header.Get("date"), 10, 64)
 	log.WithFields(fields).Debugf("Using date: %d", dateMsInt)
 
 
