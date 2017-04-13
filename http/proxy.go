@@ -3,13 +3,13 @@ package http
 import (
 	"net/http"
 	"github.com/vulcand/oxy/stream"
-	"github.com/davepgreene/turnstile/proxy"
+	prox "github.com/davepgreene/turnstile/proxy"
 )
 
 func proxy(url string) http.Handler {
-	prox := proxy.New(url)
+	proxy := prox.New(url)
 
-	stream, err := stream.New(prox)
+	stream, err := stream.New(proxy)
 	if err != nil {
 		panic(err)
 	}
