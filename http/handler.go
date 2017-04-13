@@ -15,7 +15,7 @@ import (
 	"gopkg.in/tylerb/graceful.v1"
 	"crypto"
 	"github.com/davepgreene/turnstile/config"
-	"github.com/davepgreene/turnstile/proxy"
+	//"github.com/davepgreene/turnstile/proxy"
 )
 
 const (
@@ -69,8 +69,7 @@ func Handler() error {
 
 	// All checks passed, forward the request
 	forwardConn := fmt.Sprintf("%s%s:%d", viper.GetString("service.protocol"), viper.GetString("service.hostname"), viper.GetInt("service.port"))
-	p := proxy.New(forwardConn)
-	r.PathPrefix("/").HandlerFunc(p.Handle)
+	r.PathPrefix("/").Handler(proxy(forwardConn))
 
 	n.UseHandler(r)
 
